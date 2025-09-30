@@ -18,7 +18,7 @@ DYN200::DYN200(uint8_t slaveID, HardwareSerial& serial, uint8_t MAX485ControlPin
 }
 
 // Initialize Modbus communication
-bool DYN200::begin(uint32_t baudRate = 19200) {
+bool DYN200::begin(uint32_t baudRate) {
   pinMode(_MAX485ControlPin, OUTPUT);
   digitalWrite(_MAX485ControlPin, LOW); // Start in receive mode
 
@@ -306,7 +306,7 @@ String DYN200::getConfig() {
 }
 
 // Write digital filter value
-bool DYN200::writeDigitalFiltering(uint8_t value = 50) {
+bool DYN200::writeDigitalFiltering(uint8_t value) {
     if(value > 99 || value < 1){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -315,7 +315,7 @@ bool DYN200::writeDigitalFiltering(uint8_t value = 50) {
 }
 
 // Write radix point value
-bool DYN200::writeRadixPoint(uint8_t value = 2) {
+bool DYN200::writeRadixPoint(uint8_t value) {
     if(value > 4 || value < 0){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -324,12 +324,12 @@ bool DYN200::writeRadixPoint(uint8_t value = 2) {
 }
 
 // Write boot zero
-bool DYN200::writeBootZero(bool bootZero = true) {
+bool DYN200::writeBootZero(bool bootZero) {
     return writeRegister(DYN200::_ADDR_BOOT_ZERO, static_cast<uint32_t>(bootZero));
 }
 
 // Zero or set torque value
-bool DYN200::writeSendZero(uint16_t torqueValue = 0) {
+bool DYN200::writeSendZero(uint16_t torqueValue) {
     if(torqueValue > 16384 || torqueValue < 0){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -338,7 +338,7 @@ bool DYN200::writeSendZero(uint16_t torqueValue = 0) {
 }
 
 // Write full degree value
-bool DYN200::writeFullDegree(uint16_t value = 15599) {
+bool DYN200::writeFullDegree(uint16_t value) {
     if(value > 16384 || value < 100){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -347,12 +347,12 @@ bool DYN200::writeFullDegree(uint16_t value = 15599) {
 }
 
 // Write torque direction
-bool DYN200::writeTorqueDirection(bool reversed = false) {
+bool DYN200::writeTorqueDirection(bool reversed) {
     return writeRegister(DYN200::_ADDR_TORQUE_DIRECTION, static_cast<bool>(reversed));
 }
 
 // Write communication baud rate - Limited set options
-bool DYN200::writeBaudRate(uint32_t value = 19200) {
+bool DYN200::writeBaudRate(uint32_t value) {
     // Set baud index directly if possible
     if(value>= 1 && value <= 6){
         return writeRegister(DYN200::_ADDR_BAUD_RATE, static_cast<uint32_t>(value));    
@@ -387,7 +387,7 @@ bool DYN200::writeBaudRate(uint32_t value = 19200) {
 }
 
 // Write machine ID, Modbus Address 
-bool DYN200::writeMachineID(uint8_t ID = 1) {
+bool DYN200::writeMachineID(uint8_t ID) {
     if(ID > 120 || ID < 1){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -396,7 +396,7 @@ bool DYN200::writeMachineID(uint8_t ID = 1) {
 }
 
 // Write speed filter value
-bool DYN200::writeSpeedFilter(uint8_t value = 50) {
+bool DYN200::writeSpeedFilter(uint8_t value) {
     if(value > 99 || value < 0){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
@@ -405,7 +405,7 @@ bool DYN200::writeSpeedFilter(uint8_t value = 50) {
 }
 
 // Write speed decimal value
-bool DYN200::writeSpeedDecimal(uint8_t value = 1) {
+bool DYN200::writeSpeedDecimal(uint8_t value) {
     if(value > 3 || value < 0){
         _lastErrorCode = DYN200::invalidWriteValue;
         return false;
