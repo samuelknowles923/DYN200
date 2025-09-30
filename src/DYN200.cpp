@@ -144,7 +144,7 @@ bool DYN200::readPower(float& power) {
     power = combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1));
     return true; // No scaling needed
   }
-  return false;
+  return false; // Return false if the read fails
 }
 
 // Read power as int32_t
@@ -155,7 +155,7 @@ bool DYN200::readPower(uint32_t& power) {
     power = static_cast<uint32_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
     return true; // No scaling needed
   }
-  return false;
+  return false; // Return false if the read fails
 }
 
 // Read power as int16_t
@@ -171,27 +171,31 @@ bool DYN200::readPower(uint16_t& power) {
     power = static_cast<uint16_t>(powerRaw);
     return true; // No scaling needed
   }
-  return false;
+  return false; // Return false if the read fails
 }
 
 // Read digital filter value
-uint8_t DYN200::readDigitalFilering(){
+bool DYN200::readDigitalFilering(uint8_t& value){
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_DIGITAL_FILTERING, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-    return static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        value = static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return true;
     }
-    return NAN; // Return NaN if the read fails
+    value = 0;
+    return false; // Return false if the read fails
 }
 
 // Read radix point (Decimal point placement)
-uint8_t DYN200::readRadixPoint(){
+bool DYN200::readRadixPoint(uint8_t& value){
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_RADIX_POINT, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-    return static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        value = static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return true;
     }
-    return NAN; // Return NaN if the read fails
+    value = 0;
+    return false; // Return false if the read fails
 }
 
 // Zero on boot?
@@ -199,19 +203,21 @@ bool DYN200::readBootZero(){
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_BOOT_ZERO, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-    return static_cast<bool>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return static_cast<bool>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
     }
-    return NAN; // Return NaN if the read fails
+    return false; // Return false if the read fails
 }
 
 // Read full degree value (See manual for description)
-uint16_t DYN200::readFullDegree(){
+bool DYN200::readFullDegree(uint16_t& value){
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_FULL_DEGREE, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-    return static_cast<uint16_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        value = static_cast<uint16_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return true;
     }
-    return NAN; // Return NaN if the read fails
+    value = 0;
+    return false; // Return false if the read fails
 }
 
 // Torque reversed?
@@ -219,29 +225,33 @@ bool DYN200::readTorqueDirection(){
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_TORQUE_DIRECTION, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-    return static_cast<bool>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return static_cast<bool>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
     }
-    return NAN; // Return NaN if the read fails
+    return false; // Return false if the read fails
 }
 
 // Read speed filter value
-uint8_t DYN200::readSpeedFilter() { 
+bool DYN200::readSpeedFilter(uint8_t& value) { 
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_SPEED_FILTER, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-        return static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        value = static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return true;
     }
-    return NAN; // Return NaN if the read fails
+    value = 0;
+    return false; // Return false if the read fails
 }
 
 // Read speed decimal value
-uint8_t DYN200::readSpeedDecimal() {
+bool DYN200::readSpeedDecimal(uint8_t& value) {
     uint8_t result = _node.readHoldingRegisters(DYN200::_ADDR_SPEED_DECIMAL, 2);
     _lastErrorCode = result; // Store the error code
     if (result == _node.ku8MBSuccess) {
-        return static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        value = static_cast<uint8_t>(combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1)));
+        return true;
     }
-    return NAN; // Return NaN if the read fails
+    value = 0;
+    return false; // Return false if the read fails
 }
 
 // General read register
@@ -251,7 +261,7 @@ uint32_t DYN200::readRegister(uint8_t registerAddress){
     if (result == _node.ku8MBSuccess) {
         return combineWords(_node.getResponseBuffer(0), _node.getResponseBuffer(1));
     }
-    return NAN; // Return NaN if the read fails
+    return 0; // Return 0 if the read fails (instead of NAN)
 }
 
 // Get config output
@@ -267,40 +277,60 @@ String DYN200::getConfig() {
     config += String(DYN200::_baudRate);
     config += F("\n");
 
-    uint8_t digitalFiltering = readDigitalFilering();
-    config += F("Digital Filtering: ");
-    config += String(digitalFiltering);
-    config += F("\n");
+    uint8_t digitalFiltering;
+    if (readDigitalFilering(digitalFiltering)) {
+        config += F("Digital Filtering: ");
+        config += String(digitalFiltering);
+        config += F("\n");
+    } else {
+        config += F("Digital Filtering: Error reading value\n");
+    }
 
-    uint8_t radixPoint = readRadixPoint();
-    config += F("Radix Point: ");
-    config += String(radixPoint);
-    config += F("\n");
+    uint8_t radixPoint;
+    if (readRadixPoint(radixPoint)) {
+        config += F("Radix Point: ");
+        config += String(radixPoint);
+        config += F("\n");
+    } else {
+        config += F("Radix Point: Error reading value\n");
+    }
 
     bool bootZero = readBootZero();
     config += F("Zero on Boot: ");
     config += (bootZero ? F("True") : F("False"));
     config += F("\n");
 
-    uint16_t fullDegree = readFullDegree();
-    config += F("Full Degree: ");
-    config += String(fullDegree);
-    config += F("\n");
+    uint16_t fullDegree;
+    if (readFullDegree(fullDegree)) {
+        config += F("Full Degree: ");
+        config += String(fullDegree);
+        config += F("\n");
+    } else {
+        config += F("Full Degree: Error reading value\n");
+    }
 
     bool torqueDirection = readTorqueDirection();
     config += F("Torque Direction: ");
     config += (torqueDirection ? F("Default") : F("Reversed"));
     config += F("\n");
 
-    uint8_t speedFilter = readSpeedFilter();
-    config += F("Speed Filter: ");
-    config += String(speedFilter);
-    config += F("\n");
+    uint8_t speedFilter;
+    if (readSpeedFilter(speedFilter)) {
+        config += F("Speed Filter: ");
+        config += String(speedFilter);
+        config += F("\n");
+    } else {
+        config += F("Speed Filter: Error reading value\n");
+    }
 
-    uint8_t speedDecimal = readSpeedDecimal();
-    config += F("Speed Decimal: ");
-    config += String(speedDecimal);
-    config += F("\n");
+    uint8_t speedDecimal;
+    if (readSpeedDecimal(speedDecimal)) {
+        config += F("Speed Decimal: ");
+        config += String(speedDecimal);
+        config += F("\n");
+    } else {
+        config += F("Speed Decimal: Error reading value\n");
+    }
 
     return config;
 }
