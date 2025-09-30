@@ -140,15 +140,17 @@ public:
     // ----- Configuration: Read Methods ----- //
     /**
      * @brief Read digital filter value
-     * @return uint8_t Digital filter setting
+     * @param value Reference to store the digital filter setting
+     * @return bool True if read is successful
      */
-    uint8_t readDigitalFilering();
+    bool readDigitalFilering(uint8_t& value);
     
     /**
      * @brief Read radix point (decimal placement) for torque
-     * @return uint8_t Radix point value
+     * @param value Reference to store the radix point value
+     * @return bool True if read is successful
      */
-    uint8_t readRadixPoint();
+    bool readRadixPoint(uint8_t& value);
     
     /**
      * @brief Check if zero is set on boot
@@ -158,9 +160,10 @@ public:
     
     /**
      * @brief Read full degree value
-     * @return uint16_t Full degree setting
+     * @param value Reference to store the full degree setting
+     * @return bool True if read is successful
      */
-    uint16_t readFullDegree();
+    bool readFullDegree(uint16_t& value);
     
     /**
      * @brief Check if torque direction is reversed
@@ -170,15 +173,17 @@ public:
     
     /**
      * @brief Read speed filter value
-     * @return uint8_t Speed filter setting
+     * @param value Reference to store the speed filter setting
+     * @return bool True if read is successful
      */
-    uint8_t readSpeedFilter();
+    bool readSpeedFilter(uint8_t& value);
     
     /**
      * @brief Read speed decimal value
-     * @return uint8_t Speed decimal setting
+     * @param value Reference to store the speed decimal setting
+     * @return bool True if read is successful
      */
-    uint8_t readSpeedDecimal();
+    bool readSpeedDecimal(uint8_t& value);
 
     // ----- Configuration Write Methods ----- //
 
